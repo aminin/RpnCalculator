@@ -8,8 +8,7 @@
 
 ## Использование
 
-Убедитесь что верно настроили свой [автозагрузчик](https://github.com/symfony/ClassLoader) или используйте
-испольуйте автозагрузчик калькулятора.
+    <?php
 
     require_once __DIR__ . '/../src/RpnCalculator/Autoloader.php';
 
