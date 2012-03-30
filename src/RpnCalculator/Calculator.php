@@ -40,6 +40,11 @@ class Calculator
         return $this;
     }
 
+    public function getOperatorCollection()
+    {
+        return $this->operatorCollection;
+    }
+
     public function setLexer(Lexer $lexer)
     {
         $this->lexer = $lexer;
@@ -73,13 +78,34 @@ class Calculator
         $this->stack = array();
 
         foreach ($rpnArray as $token) {
-            if (is_numeric($token)) {
-                $this->stack[] = $token;
-            } else {
-                $this->stack = $this->operatorCollection->apply($this->stack, $token);
-            }
+            $this->putToken($token);
         }
 
-        return array_pop($this->stack);
+        return $this->getStackHead();
+    }
+
+    /**
+     * @param mixed $token
+     * @return Calculator
+     */
+    public function putToken($token)
+    {
+        $token = trim($token);
+
+        if (is_numeric($token)) {
+            $this->stack[] = $token;
+        } else {
+            $this->stack = $this->operatorCollection->apply($this->stack, $token);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getStackHead()
+    {
+        return end($this->stack);
     }
 }

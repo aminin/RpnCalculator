@@ -13,10 +13,11 @@ namespace RpnCalculator;
  */
 class Lexer
 {
-    const REGEXP_NUMBER = '~\d+(?:\.\d+)?~A';
-    const REGEXP_WHITESPACE = '~\s+~A';
-
-    private $operatorRegexp = '~[\+\*\-\/]~A';
+    private $tokens = array(
+        'operator'   => '~[\+\*\-\/]~A',
+        'number'     => '~\d+(?:\.\d+)?~A',
+        'whitespace' => '~\s+~A',
+    );
 
     /**
      * Позволяет настроить набор операций, определяемых при анализе выражения
@@ -26,7 +27,7 @@ class Lexer
      */
     public function setOperatorRegexp($operatorRegexp)
     {
-        $this->operatorRegexp = $operatorRegexp;
+        $this->tokens['operator'] = $operatorRegexp;
         return $this;
     }
 
@@ -40,20 +41,24 @@ class Lexer
     public function tokenize($input)
     {
         $length = strlen($input);
-        $position = 0;
+        $lastPosition = $position = 0;
         $tokens = array();
 
         while ($position < $length) {
             if (
-                preg_match($this->operatorRegexp, $input, $match, null, $position)
-                || preg_match(self::REGEXP_NUMBER, $input, $match, null, $position)
+                preg_match($this->tokens['operator'], $input, $match, null, $position)
+                || preg_match($this->tokens['number'], $input, $match, null, $position)
             ) {
                 $tokens[] = $match[0];
                 $position += strlen($match[0]);
-            } else if (preg_match(self::REGEXP_WHITESPACE, $input, $match, null, $position)) {
+            } else if (preg_match($this->tokens['whitespace'], $input, $match, null, $position)) {
                 $position += strlen($match[0]);
             } else {
                 throw new Exception(sprintf("Неизвестный символ в строке '%s' в позиции %d", $input, $position));
+            }
+
+            if ($lastPosition >= $position) {
+                throw new Exception(sprintf("Зацикливание лексера в строке '%s' в позиции %d", $input, $position));
             }
         }
 
