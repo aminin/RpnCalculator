@@ -22,6 +22,10 @@ class Division extends BinaryOperatorAbstract
      */
     public function applyBinary($a, $b)
     {
+        if ($b == 0) {
+            throw new Exception('Делить на ноль нельзя');
+        }
+
         return $a / $b;
     }
 }

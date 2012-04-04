@@ -28,6 +28,14 @@ class CalculatorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(-4, $this->object->calculate("32 8'/"), 'Пример для унарной операции');
     }
 
+    /**
+     * @expectedException RpnCalculator\Operator\Exception
+     */
+    public function testDivisionByZeroThrowsException()
+    {
+        $this->object->calculate("5 0 /");
+    }
+
     public function testSerialTokenInputMode()
     {
         $this->object->getOperatorCollection()->addOperator(new Sin);
